@@ -24,4 +24,10 @@
         android:id="@+id/btn_play"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:id="@+id/sb_Status"/>
 </RelativeLayout>

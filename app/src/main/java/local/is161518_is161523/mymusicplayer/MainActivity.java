@@ -15,15 +15,31 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 
+/*
+QUELLEN
+http://blog.nkdroidsolutions.com/android-foreground-service-example-tutorial/
+
+
+Playing Music works
+
+missing:
+SeekBar [Statusinfo]
+Ask User to grant access
+
+
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     public static String TAG ="1234";
     private MediaPlayer mediaPlayer;
+    private SeekBar sb_Status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btn_play = (Button) findViewById(R.id.btn_play);
         Button btn_stop = (Button) findViewById(R.id.btn_stop);
+        sb_Status = (SeekBar) findViewById(R.id.sb_Status);
 
         btn_play.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -53,38 +70,38 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-    play();
+    //play();
     }
 
     public void play(){
         String PATH_TO_FILE = "/sdcard/Music/test.mp3";
-  /*'      mediaPlayer = new  MediaPlayer();
+        mediaPlayer = new  MediaPlayer();
         try {
             mediaPlayer.setDataSource(PATH_TO_FILE);
             mediaPlayer.prepare();
         }catch (IOException e){Log.i(TAG,"IOException"+e.toString());}
         mediaPlayer.start();
-*/
 
 
-        File file = new File(PATH_TO_FILE);
+
+        File file = new File("/sdcard/Music/test.mp3");
         if(file.exists())
         {
-            Log.i(TAG,"File exist");
+            Log.i(TAG,"File exist"+Environment.getExternalStorageDirectory().getAbsolutePath().toString());
         }
         else
         {
             Log.i(TAG,"NO File");
         }
 
-            MediaPlayer mPlayer = new MediaPlayer();
+      /*      MediaPlayer mPlayer = new MediaPlayer();
         Uri myUri = Uri.parse(PATH_TO_FILE);
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try{
         mPlayer.setDataSource(getApplicationContext(), myUri);
         mPlayer.prepare();
         }catch (IOException e){Log.i(TAG,"IOException: "+e.toString());}
-        mPlayer.start();
+        mPlayer.start();*/
     }
 
 
