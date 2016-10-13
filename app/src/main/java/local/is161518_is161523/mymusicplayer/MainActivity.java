@@ -133,10 +133,15 @@ public class MainActivity extends AppCompatActivity{
 
         Runnable not = new Runnable() {
             public void run() {
-                startPlayProgressUpdater();
-                int progress = mService.getProgressPercentage();
-                sb_Status.setProgress(progress);
-                Log.i(TAG, "THREAD: " + Integer.toString(progress));
+                if(mService.getMediaPlayerPlaying()) {
+                    startPlayProgressUpdater();
+                    int progress = mService.getProgressPercentage();
+                    sb_Status.setProgress(progress);
+                    Log.i(TAG, "THREAD: " + Integer.toString(progress));
+                }
+                else {
+                    sb_Status.setProgress(0);
+            }
             }
         };
         handler.postDelayed(not,1000);
