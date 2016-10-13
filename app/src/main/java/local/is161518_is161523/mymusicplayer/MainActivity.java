@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity{
             public void run() {
                 startPlayProgressUpdater();
                 int progress = mService.getProgressPercentage();
+                sb_Status.setProgress(progress);
                 Log.i(TAG, "THREAD: " + Integer.toString(progress));
             }
         };
