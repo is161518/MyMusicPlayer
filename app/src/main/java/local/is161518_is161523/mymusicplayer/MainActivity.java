@@ -1,10 +1,15 @@
 package local.is161518_is161523.mymusicplayer;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,29 +22,33 @@ import android.app.Service;
 import android.content.Intent;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import android.os.IBinder;
 
 import java.io.File;
 import java.io.IOException;
 
 /*
-QUELLEN
+SOURCES
 http://blog.nkdroidsolutions.com/android-foreground-service-example-tutorial/
+http://stackoverflow.com/questions/2468874/how-can-i-update-information-in-an-android-activity-from-a-background-service/2469646#2469646
 
 
 Playing Music works
 
 missing:
-SeekBar [Statusinfo]
 Ask User to grant access
 
 
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
+
+
+
 
     public static String TAG ="1234";
-    private MediaPlayer mediaPlayer;
     private SeekBar sb_Status;
+    private boolean runThread=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                 startService(startIntent);
                 Log.i(TAG,"Start Intent");
+                startPlayProgressUpdater();
+
             }
         });
 
@@ -70,42 +81,76 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-    //play();
+
+
+
     }
 
-    public void play(){
-        String PATH_TO_FILE = "/sdcard/Music/test.mp3";
-        mediaPlayer = new  MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(PATH_TO_FILE);
-            mediaPlayer.prepare();
-        }catch (IOException e){Log.i(TAG,"IOException"+e.toString());}
-        mediaPlayer.start();
+    ForegroundService mService;
+    boolean mBound = false;
 
-
-
-        File file = new File("/sdcard/Music/test.mp3");
-        if(file.exists())
-        {
-            Log.i(TAG,"File exist"+Environment.getExternalStorageDirectory().getAbsolutePath().toString());
-        }
-        else
-        {
-            Log.i(TAG,"NO File");
-        }
-
-      /*      MediaPlayer mPlayer = new MediaPlayer();
-        Uri myUri = Uri.parse(PATH_TO_FILE);
-        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try{
-        mPlayer.setDataSource(getApplicationContext(), myUri);
-        mPlayer.prepare();
-        }catch (IOException e){Log.i(TAG,"IOException: "+e.toString());}
-        mPlayer.start();*/
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to Your Service
+        Intent intent = new Intent(this, ForegroundService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to the running Service, cast the IBinder and get instance
+            ForegroundService.LocalBinder binder = (ForegroundService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
 
+    private final Handler handler = new Handler();
 
+    public void startPlayProgressUpdater() {
+
+
+        Runnable not = new Runnable() {
+            public void run() {
+                startPlayProgressUpdater();
+                int progress = mService.getProgressPercentage();
+                Log.i(TAG, "THREAD: " + Integer.toString(progress));
+            }
+        };
+        handler.postDelayed(not,1000);
+    }
+/*
+    private Runnable mUpdateTimeTask = new Runnable() {
+        public void run() {
+
+                int progress = mService.getProgressPercentage();
+                Log.i(TAG, "THREAD: " + Integer.toString(progress));
+                mUpdateTimeTask.run();
+            handler.postDelayed(mUpdateTimeTask,1000);
+
+
+        }
+    };*/
 
 }
