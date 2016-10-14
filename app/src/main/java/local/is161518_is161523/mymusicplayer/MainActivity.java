@@ -29,6 +29,7 @@ http://stackoverflow.com/questions/2468874/how-can-i-update-information-in-an-an
 INTERNAL:
 currently missing:
 Ask User to grant rights for access to Storage [READ_EXTERNAL_STORAGE]
+PLAY - Button pressed twice currently a problem
 */
 
 public class MainActivity extends AppCompatActivity{
@@ -101,13 +102,14 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    /* Required Interface used by bindService() */
+    /* Required Interface used by bindService()
+     * Defines callbacks for service binding */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
 
-            // We've bound to the running Service, cast the IBinder and get instance
+            // We've bound to the ForegroundService , cast the IBinder and get instance
             ForegroundService.LocalBinder binder = (ForegroundService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
